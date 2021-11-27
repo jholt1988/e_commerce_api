@@ -1,11 +1,15 @@
+'use strict';
+
 const express = require('express');
 const app = express();
+const dotenv = require('dotenv').config();
+
 
 async function startServer (){
 
 
-    app.listen(3000, () => {
-        console.log(`server listening on PORT 3000`)
+    app.listen(process.env.PORT, () => {
+        console.log(`server listening on ${process.env.PORT}`)
     })
 }
 startServer();
