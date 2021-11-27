@@ -1,0 +1,27 @@
+{
+  "name": "e_commerce_api",
+  "version": "1.0.0",
+  "description": "An server-side only REST api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://e_commerce_api"
+  },
+  "keywords": [
+    "api",
+    "rest",
+    "e_commerce"
+  ],
+  "author": "Jordan A Hot",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "pg-promise": "^10.11.1",
+    "swagger-editor": "^4.0.1"
+  }
+}
