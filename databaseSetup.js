@@ -53,11 +53,6 @@ const orderTable=
   FOREIGN KEY (User_Id) REFERENCES User(User_Id)
 );`
 
-
-
-
-
-
 const orderItemTable=
 `CREATE TABLE Order_Item
 (
@@ -98,8 +93,6 @@ CREATE TABLE User_Account
   PRIMARY KEY (User_Id),
   FOREIGN KEY (User_Id) REFERENCES User(User_Id)
 );`
-
-
 try {
     const db = new Client({
       user: process.env.PGUSER,
@@ -127,3 +120,4 @@ try {
   }
 
 })();
+console.log(db)
