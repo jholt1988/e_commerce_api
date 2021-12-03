@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../database/index');
 
 module.exports = class ProductModel {
 
@@ -52,4 +52,4 @@ module.exports = class ProductModel {
       throw err;
     }
   }
-}``
+}

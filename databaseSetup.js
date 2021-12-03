@@ -1,98 +1,94 @@
-const {Client} = require(pg);
-
+const {Client} = require('pg');
 
 (async () => {
 
 
-const usersTable = 
+  const usersTable = `
+  CREATE TABLE IF NOT EXISTS users (
+    id              INT               PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+    userName        VARCHAR(50),      
+    password        TEXT
+  );
 `
-CREATE TABLE IF NOT EXISTS User
-(
-  User_Name INT NOT NULL,
-  Password INT NOT NULL,
-  User_Id INT NOT NULL,
-  PRIMARY KEY (User_Id)
+const userAccountTable=
+`CREATE TABLE IF NOT EXISTS userAccounts (
+  userId               INT,
+  email           VARCHAR(50),      
+  firstName       VARCHAR(50),
+  lastName        VARCHAR(50),
+  address         VARCHAR(50),
+  city            VARCHAR(50),
+  state           VARCHAR(50),
+  zip             INT,
+ FOREIGN KEY (userId) REFERENCES users(id),
+ PRIMARY KEY (userId, email)
+ 
 );`
 
-
-
-const cartTable= 
+const productsTable = `
+  CREATE TABLE IF NOT EXISTS products (
+    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+    name            VARCHAR(50)     NOT NULL,
+    price           BIGINT          NOT NULL,
+    description     VARCHAR(50)     NOT NULL
+  );
 `
-CREATE TABLE Cart
-(
-  Cart_ID INT NOT NULL,
-  Created INT NOT NULL,
-  Modified INT NOT NULL,
-  User_Id INT NOT NULL,
-  PRIMARY KEY (Cart_ID),
-  FOREIGN KEY (User_Id) REFERENCES User(User_Id)
-);`
 
+const ordersTable = `
+  CREATE TABLE IF NOT EXISTS orders (
+    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+    total           INT             NOT NULL,
+    status          VARCHAR(50)     NOT NULL,
+    userId          INT             NOT NULL,
+    created         DATE            NOT NULL,
+    modified        DATE            NOT NULL,
+   FOREIGN KEY (userId) REFERENCES users(id)
+  );
+`
 
-const productsTable =
-`CREATE TABLE Products
-(
-  Product_ID INT NOT NULL,
-  Product_Name INT NOT NULL,
-  Product_Price INT NOT NULL,
-  Inventory INT NOT NULL,
-  Description INT NOT NULL,
-  PRIMARY KEY (Product_ID)
-);`  
+const orderItemsTable = `
+  CREATE TABLE IF NOT EXISTS orderItems (
+    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+    created         DATE            NOT NULL,
+    orderId         INT             NOT NULL,
+    qty             INT             NOT NULL,
+    price           INT             NOT NULL,
+    productId       INT             NOT NULL,
+    name            VARCHAR(50)     NOT NULL,
+    description     VARCHAR(200)    NOT NULL,
+    FOREIGN KEY (orderId) REFERENCES orders(id)
+  );
+`
 
-const orderTable=
-`CREATE TABLE Order
-(
-  Total INT NOT NULL,
-  Shipping_Address INT NOT NULL,
-  Order_ID INT NOT NULL,
-  Order_Date INT NOT NULL,
-  Status INT NOT NULL,
-  User_Id INT NOT NULL,
-  PRIMARY KEY (Order_ID),
-  FOREIGN KEY (User_Id) REFERENCES User(User_Id)
-);`
+const cartsTable= `
+  CREATE TABLE IF NOT EXISTS carts (
+    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+    userId          INT             NOT NULL,
+    modified        DATE            NOT NULL,
+    created         DATE            NOT NULL,
+    FOREIGN KEY (userId)  REFERENCES users(id)
+  );
+`
 
-const orderItemTable=
-`CREATE TABLE Order_Item
-(
-  Created INT NOT NULL,
-  Modified INT NOT NULL,
-  Quantity INT NOT NULL,
-  Price INT NOT NULL,
-  OrderItemID INT NOT NULL,
-  Product_ID INT NOT NULL,
-  Order_ID INT NOT NULL,
-  PRIMARY KEY (OrderItemID),
-  FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
-  FOREIGN KEY (Order_ID) REFERENCES Order(Order_ID)
-);`
+const cartItemsTable= `
+  CREATE TABLE IF NOT EXISTS cartItems (
+    id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+    cartId          INT             NOT NULL,
+    productId       INT             NOT NULL,
+    qty             INT             NOT NULL,
+   FOREIGN KEY (cartId) REFERENCES carts(id),
+   FOREIGN KEY (productId) REFERENCES products(id)
+  );
+`
+const userOrdersTable= `
+CREATE TABLE IF NOT EXISTS userOrders (
+  userId            INT,
+  orderId           INT,
+  FOREIGN KEY (userId) REFERENCES users(id),
+  FOREIGN KEY (orderId) REFERENCES orders(id),
+  PRIMARY KEY (userId, orderId)
+);` 
 
-
-const userOrderTable=`
-CREATE TABLE User_Orders
-(
-  Order_ID INT NOT NULL,
-  User_Id INT NOT NULL,
-  PRIMARY KEY (Order_ID, User_Id),
-  FOREIGN KEY (Order_ID) REFERENCES Order(Order_ID),
-  FOREIGN KEY (User_Id) REFERENCES User(User_Id)
-);`
-
-const userAccountTable=`
-CREATE TABLE User_Account
-(
-  Email INT NOT NULL,
-  First_Name INT NOT NULL,
-  Last_Name INT NOT NULL,
-  Street INT NOT NULL,
-  City INT NOT NULL,
-  State INT NOT NULL,
-  Zip INT NOT NULL,
-  User_Id INT NOT NULL,
-  PRIMARY KEY (User_Id),
-  FOREIGN KEY (User_Id) REFERENCES User(User_Id)
-);`
 try {
     const db = new Client({
       user: process.env.PGUSER,
@@ -107,11 +103,12 @@ try {
     // Create tables on database
     await db.query(usersTable);
     await db.query(userAccountTable);
-    await db.query(orderTable);
-    await db.query(orderItemTable);
-    await db.query(cartTable);
-    await db.query(userOrderTable);
-    await db.query(productsTable)
+    await db.query(ordersTable);
+    await db.query(orderItemsTable);
+    await db.query(cartsTable);
+    await db.query(userOrdersTable);
+    await db.query(productsTable);
+    await db.query(cartItemsTable);
 
     await db.end();
 
@@ -120,4 +117,4 @@ try {
   }
 
 })();
-console.log(db)
+
