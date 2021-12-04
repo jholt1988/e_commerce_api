@@ -1,0 +1,121 @@
+---
+swagger: "2.0"
+info:
+  description: "An API for a online retail shop to allow users order items, track\
+    \ orders, and track inventory"
+  version: "1.1"
+  title: "Bentlys Online Retail Shop E-Commerce API"
+  contact:
+    name: "Jordan A Holt"
+    email: "jordanh316@gmail.com"
+host: "localhost"
+basePath: "/v1.1/"
+tags:
+- name: "auth"
+  description: "User authorization operations"
+- name: "users"
+  description: "User operations"
+- name: "store"
+  description: "Store and inventory operations"
+- name: "cart"
+  description: "Cart operations"
+- name: "orders"
+  description: "Orders and payment operations"
+schemes:
+- "https"
+security:
+- UserSecurity: []
+paths:
+  /auth/register:
+    post:
+      tags:
+      - "auth"
+      summary: "Operation To Login A User"
+      description: "Logins In A Registered User"
+      operationId: "registerUser"
+      consumes:
+      - "application/x-ww-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "user"
+        required: false
+        schema:
+          $ref: "#/definitions/UserModel"
+      responses:
+        "200":
+          description: "200 User created"
+          schema:
+            $ref: "#/definitions/UserModel"
+        "404":
+          description: "404 User not created"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+      x-swagger-router-controller: "Auth"
+securityDefinitions:
+  UserSecurity:
+    type: "basic"
+definitions:
+  UserModel:
+    type: "object"
+    required:
+    - "email"
+    - "firstName"
+    - "id"
+    - "lastName"
+    - "password"
+    - "userName"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      userName:
+        type: "string"
+      password:
+        type: "string"
+        format: "password"
+      email:
+        type: "string"
+        format: "email"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      address1:
+        type: "string"
+      address2:
+        type: "string"
+      city:
+        type: "string"
+      state:
+        type: "string"
+      zipcode:
+        type: "integer"
+        format: "postal"
+      admin:
+        type: "boolean"
+        default: false
+    example:
+      zipcode: 0
+      firstName: "firstName"
+      lastName: "lastName"
+      password: "password"
+      address2: "address2"
+      city: "city"
+      address1: "address1"
+      admin: false
+      id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      state: "state"
+      userName: "userName"
+      email: "email"
+  ErrorModel:
+    required:
+    - "code"
+    - "message"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
