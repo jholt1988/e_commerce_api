@@ -30,8 +30,8 @@ paths:
     post:
       tags:
       - "auth"
-      summary: "Operation To Login A User"
-      description: "Logins In A Registered User"
+      summary: "Operation to register a new user"
+      description: "creates a new user object/record"
       operationId: "registerUser"
       consumes:
       - "application/x-ww-form-urlencoded"
@@ -53,6 +53,188 @@ paths:
           schema:
             $ref: "#/definitions/ErrorModel"
       x-swagger-router-controller: "Auth"
+  /auth/login:
+    post:
+      tags:
+      - "auth"
+      summary: "Operation To Login A User"
+      description: "Logins In A Registered User"
+      operationId: "userLogin"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userName"
+        in: "formData"
+        description: "userName of user logging in"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "formData"
+        description: "password for user logging in"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "200 Ok"
+          schema:
+            $ref: "#/definitions/UserModel"
+        "404":
+          description: "404 Error. Please check credentials and try again"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+      x-swagger-router-controller: "Auth"
+  /users/{userName}:
+    get:
+      tags:
+      - "users"
+      summary: "Find user by userName"
+      description: "Returns a user based on userName"
+      operationId: "getUserByUserName"
+      parameters:
+      - name: "userName"
+        in: "path"
+        description: "userName of current user"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "200 Success-User Found"
+          schema:
+            $ref: "#/definitions/UserModel"
+        "404":
+          description: "404 Failed-User Not Found"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+      x-swagger-router-controller: "Users"
+    put:
+      tags:
+      - "users"
+      summary: "Modifies a user object"
+      description: "Updates a user object"
+      operationId: "updateUser"
+      parameters:
+      - name: "userName"
+        in: "path"
+        description: "userName of current user"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "user"
+        required: false
+        schema:
+          $ref: "#/definitions/UserModel"
+      responses:
+        "200":
+          description: "200 Success-User Updated"
+          schema:
+            $ref: "#/definitions/UserModel"
+        "400":
+          description: "400 Invalid Request"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        "401":
+          description: "401 UNAUTHORIZED- You Must Be Logged In To            Complete\
+            \ Request'"
+          schema:
+            $ref: "#/definitions/NotAuthorized"
+      x-swagger-router-controller: "Users"
+  /users/{userId}/orders:
+    get:
+      tags:
+      - "users"
+      summary: "Get a list of user orders by userId"
+      description: "Get a collection of user order"
+      operationId: "getUserOrders"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        format: "uuid"
+      responses:
+        "200":
+          description: "200 - Orders Found"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/UserOrdersModel"
+      x-swagger-router-controller: "Users"
+  /users/{userId}/orders/{orderId}:
+    get:
+      tags:
+      - "users"
+      - "orders"
+      summary: "Get a single order"
+      description: "Get a single order object"
+      operationId: "getUserOrderByOrderId"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        format: "uuid"
+      - name: "orderId"
+        in: "path"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "200 - Order Found"
+          schema:
+            $ref: "#/definitions/UserOrdersModel"
+        "400":
+          description: "400 Invalid Request"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+      x-swagger-router-controller: "Users"
+  /store/inventory:
+    get:
+      tags:
+      - "store"
+      summary: "Get a complete list of items in inventory"
+      description: "Get a complete list of inventoryItem objects"
+      operationId: "getAllInventoryItems"
+      parameters: []
+      responses:
+        "200":
+          description: "200 - Success"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/InventoryModel"
+        "400":
+          description: "400 Invalid Request"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+      x-swagger-router-controller: "Store"
+    post:
+      tags:
+      - "store"
+      summary: "Adds a new inventory object to database"
+      description: "Adds new inventory item"
+      operationId: "addInventoryItem"
+      parameters:
+      - in: "body"
+        name: "inventoryObject"
+        required: true
+        schema:
+          $ref: "#/definitions/InventoryModel"
+      responses:
+        "202":
+          description: "202 - Item added to inventory"
+          schema:
+            $ref: "#/definitions/InventoryModel"
+        "404":
+          description: "404 - Invalid entry"
+          schema:
+            $ref: "#/definitions/NotFound"
+        "500":
+          description: "500 - OOPS!"
+          schema:
+            $ref: "#/definitions/NotAuthorized"
+      x-swagger-router-controller: "Store"
 securityDefinitions:
   UserSecurity:
     type: "basic"
@@ -119,3 +301,78 @@ definitions:
         format: "int32"
       message:
         type: "string"
+  NotAuthorized:
+    description: "You are not authorized to perform this task"
+  UserOrdersModel:
+    required:
+    - "orders"
+    - "userId"
+    properties:
+      userId:
+        $ref: "#/definitions/id"
+      orders:
+        type: "object"
+        properties:
+          order ids:
+            $ref: "#/definitions/id_2"
+    example:
+      orders: "{}"
+      userId: {}
+  id:
+    type: "string"
+    format: "uuid"
+  id_2:
+    type: "integer"
+    format: "int32"
+  InventoryModel:
+    required:
+    - "catergoryId"
+    - "id"
+    - "lastOrderDate"
+    - "perUnitCost"
+    - "perUnitPrice"
+    - "productName"
+    - "quantity"
+    - "status"
+    - "vendorId"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      productName:
+        type: "string"
+      perUnitCost:
+        type: "integer"
+        format: "money(usd)"
+      perUnitPrice:
+        type: "integer"
+        format: "money(usd)"
+      vendorId:
+        type: "integer"
+        format: "int32"
+      quantity:
+        type: "integer"
+      lastOrderDate:
+        type: "string"
+        format: "date-time"
+      status:
+        type: "string"
+        enum:
+        - "In Stock"
+        - "Limited Availability"
+        - "BackOrdered"
+        - "Out Of Stock"
+      catergoryId:
+        $ref: "#/definitions/id_2"
+    example:
+      quantity: 5
+      catergoryId: {}
+      perUnitPrice: 1
+      vendorId: 5
+      id: 0
+      lastOrderDate: "2000-01-23T04:56:07.000+00:00"
+      perUnitCost: 6
+      productName: "productName"
+      status: "In Stock"
+  NotFound:
+    description: "The specified resource was not found"

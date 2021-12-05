@@ -2,13 +2,13 @@
 
 
 /**
- * Operation to register a new user
- * creates a new user object/record
+ * Adds a new inventory object to database
+ * Adds new inventory item
  *
- * user UserModel  (optional)
- * returns UserModel
+ * inventoryObject InventoryModel 
+ * returns InventoryModel
  **/
-exports.registerUser = function(user) {
+exports.addInventoryItem = function(inventoryObject) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {"empty": false};
@@ -22,17 +22,15 @@ exports.registerUser = function(user) {
 
 
 /**
- * Operation To Login A User
- * Logins In A Registered User
+ * Get a complete list of items in inventory
+ * Get a complete list of inventoryItem objects
  *
- * userName String userName of user logging in
- * password String password for user logging in
- * returns UserModel
+ * returns List
  **/
-exports.userLogin = function(userName,password) {
+exports.getAllInventoryItems = function() {
   return new Promise(function(resolve, reject) {
     var examples = {};
-    examples['application/json'] = {"empty": false};
+    examples['application/json'] = {};
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
     } else {

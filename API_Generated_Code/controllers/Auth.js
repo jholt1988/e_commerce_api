@@ -13,3 +13,15 @@ module.exports.registerUser = function registerUser (req, res, next) {
       utils.writeJson(res, response);
     });
 };
+
+module.exports.userLogin = function userLogin (req, res, next) {
+  var userName = req.swagger.params['userName'].value;
+  var password = req.swagger.params['password'].value;
+  Auth.userLogin(userName,password)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
